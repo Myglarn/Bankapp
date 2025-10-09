@@ -1,16 +1,16 @@
 ﻿
 namespace Bankapp.Services
 {
-    public class Accountservice : IAccountservice
+    public class Accountservice /*: IAccountservice*/
     {
-        public IBankaccount CreatAccount(string name, string currency, decimal initialBalance)
-        {
-            
-        }
+        //public IBankaccount CreatAccount(string name, string currency, decimal initialBalance)
+        //{
+        //    return;
+        //}
 
-        public List<IBankaccount> GetAccounts()
-        {
-            
-        }
+        //public List<IBankaccount> GetAccounts()
+        //{
+        //    return;
+        //}
     }
 }
