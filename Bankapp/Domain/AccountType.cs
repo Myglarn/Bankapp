@@ -1,6 +1,8 @@
 ﻿namespace Bankapp.Domain
 {
-    public class AccountType
+    public enum AccountType
     {
+        Savings,
+        Deposit
     }
 }

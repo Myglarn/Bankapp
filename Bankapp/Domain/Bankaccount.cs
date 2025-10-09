@@ -11,9 +11,18 @@ namespace Bankapp.Domain
         public string Currency { get; private set; }
 
         public decimal Balance { get; private set; }
+        public AccountType AccountType { get; private set; }
 
         public DateTime LastUpdated { get; private set; }
 
+        public Bankaccount(string name, AccountType accountType, string currency, decimal balance )
+        {
+            Name = name;
+            Currency = currency;
+            Balance = balance;
+            AccountType = accountType;
+            LastUpdated = DateTime.Now;
+        }
         public void Deposit(decimal amount)
         {
             throw new NotImplementedException();

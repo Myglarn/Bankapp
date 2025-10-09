@@ -1,16 +1,19 @@
 ﻿
 namespace Bankapp.Services
 {
-    public class Accountservice /*: IAccountservice*/
+    public class Accountservice : IAccountservice
     {
-        //public IBankaccount CreatAccount(string name, string currency, decimal initialBalance)
-        //{
-        //    return;
-        //}
+        private readonly List<IBankaccount> _accounts = new();
+        public IBankaccount CreatAccount(string name, AccountType accountType, string currency, decimal initialBalance)
+        {
+            var account = new Bankaccount(name, accountType, currency, initialBalance);
+            _accounts.Add(account);
+            return account;
+        }
 
-        //public List<IBankaccount> GetAccounts()
-        //{
-        //    return;
-        //}
+        public List<IBankaccount> GetAccounts()
+        {
+            return _accounts;
+        }
     }
 }
