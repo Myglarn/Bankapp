@@ -15,11 +15,11 @@ namespace Bankapp.Domain
 
         public DateTime LastUpdated { get; private set; }
 
-        public Bankaccount(string name, AccountType accountType, string currency, decimal balance )
+        public Bankaccount(string name, AccountType accountType, string currency, decimal initialBalance )
         {
             Name = name;
             Currency = currency;
-            Balance = balance;
+            Balance = initialBalance;
             AccountType = accountType;
             LastUpdated = DateTime.Now;
         }

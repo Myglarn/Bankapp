@@ -31,19 +31,45 @@
 	<button type="submit">Skapa konto</button>
 </EditForm>
 
+<h4>Alla konton</h4>
+@if (_accounts.Count == 0)
+{
+	<p>Det finns inga konton ännu, registrera ditt första konto ovan!</p>
+}
+else
+{
+	<ul>
+		@foreach (var account in _accounts)
+		{
+			<li>
+				<strong>@account.Name</strong> - @account.AccountType - @account.Balance - @account.Currency
+				<small>(uppdaterad @account.LastUpdated.ToLocalTime())</small>
+			</li>
+		}
+	</ul>
+}	
+
 @code {
-	
+
 	private readonly CreatAccountModel _model = new();
+	private List<IBankaccount> _accounts = new();
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+	}
 
 	private Task CreateAccountAsync()
 	{
 		try
 		{
-			Accountservice.CreatAccount(_model.Name, _model.AccountType, _model.Currency, _model.InitialBalance);		
+			Accountservice.CreatAccount(_model.Name, _model.AccountType, _model.Currency, _model.InitialBalance);
+			_accounts = Accountservice.GetAccounts().ToList();
+			_model.Clear();
 		}
 		catch (Exception exception)
 		{
-			Console.WriteLine();
+			Console.WriteLine("Du saknar någon input");
 			throw;
 		}
 		return Task.CompletedTask;
@@ -53,7 +79,7 @@
 	{
 		public string? Name { get; set; }
 		public AccountType AccountType { get; set;}
-		public string? Currency { get; set; }
+		public string? Currency { get; set; } = "SEK";
 		public decimal InitialBalance { get; set; } = 0;
 
 		public void Clear()
