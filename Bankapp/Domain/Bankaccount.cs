@@ -1,4 +1,5 @@
 ﻿using Bankapp.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace Bankapp.Domain
 {
@@ -22,6 +23,18 @@ namespace Bankapp.Domain
             Balance = initialBalance;
             AccountType = accountType;
             LastUpdated = DateTime.Now;
+        }
+
+        [JsonConstructor]
+        public Bankaccount(Guid id, string name, AccountType accountType, string currency, decimal balance) 
+        {
+            Id = id;
+            Name = name;
+            Currency = currency;
+            Balance = balance;
+            AccountType = accountType;
+            LastUpdated = DateTime.Now;
+
         }
         public void Deposit(decimal amount)
         {

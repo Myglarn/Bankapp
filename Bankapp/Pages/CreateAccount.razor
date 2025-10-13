@@ -52,28 +52,29 @@ else
 @code {
 
 	private readonly CreatAccountModel _model = new();
-	private List<IBankaccount> _accounts = new();
+	private List<Bankaccount> _accounts = new();
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
-		_accounts = Accountservice.GetAccounts().ToList();
-		base.OnInitialized();
+		_accounts = await Accountservice.GetAccounts();
 	}
+	
 
-	private Task CreateAccountAsync()
+	private async Task CreateAccountAsync()
 	{
 		try
 		{
 			Accountservice.CreatAccount(_model.Name, _model.AccountType, _model.Currency, _model.InitialBalance);
-			_accounts = Accountservice.GetAccounts().ToList();
+			_accounts = await Accountservice.GetAccounts();
 			_model.Clear();
+			StateHasChanged();
 		}
 		catch (Exception exception)
 		{
 			Console.WriteLine("You are missing an input");
 			throw;
 		}
-		return Task.CompletedTask;
+		
 	}
 
 	private class CreatAccountModel

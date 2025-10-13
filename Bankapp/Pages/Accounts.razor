@@ -24,25 +24,24 @@ else
 @code {
 
 	
-	private List<IBankaccount> _accounts = new();
-	protected override void OnInitialized()
+	private List<Bankaccount> _accounts = new();
+	protected override async Task OnInitializedAsync()
 	{
-		_accounts = Accountservice.GetAccounts().ToList();
-		base.OnInitialized();
+		_accounts = await Accountservice.GetAccounts();
 	}
 
-	private Task GetAccountAsync()
+	private async Task GetAccountAsync()
 	{
 		try
 		{			
-			_accounts = Accountservice.GetAccounts().ToList();			
+			_accounts = await Accountservice.GetAccounts();			
 		}
 		catch (Exception exception)
 		{
 			Console.WriteLine("You are missing an input");
 			throw;
 		}
-		return Task.CompletedTask;
+		
 	}
 
 }

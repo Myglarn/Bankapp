@@ -2,7 +2,7 @@
 {
     public interface IAccountservice
     {
-        IBankaccount CreatAccount(string name, AccountType accountType, string currency, decimal initialBalance);
-        List<IBankaccount> GetAccounts();
+        Task<Bankaccount> CreatAccount(string name, AccountType accountType, string currency, decimal initialBalance);
+        Task<List<Bankaccount>> GetAccounts();
     }
 }
