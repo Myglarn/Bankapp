@@ -1,40 +1,40 @@
 ﻿@page "/CreateAccount"
 @inject IAccountservice Accountservice;
 
-<h3>Vänligen skapa ett konto</h3>
+<h3>Please create an account</h3>
 
 <EditForm Model="_model" OnValidSubmit="CreateAccountAsync">
 	<DataAnnotationsValidator />
 	<ValidationSummary />
 
-	<div className="mb-2">
-		<label>Kontonamn</label>
+	<div class="form-row">
+		<label>Account name</label>
 		<InputText @bind-Value="_model.Name"></InputText>
 	</div>
-	<div className="mb-2">
-		<label>Kontotyp</label>
+	<div class="form-row">
+		<label>Account type</label>
 		<InputSelect @bind-Value="_model.AccountType">
-			<option value="">Välj kontotyp!</option>
-			<option value="@AccountType.Deposit">Baskonto</option>
-			<option value="@AccountType.Savings">Sparkonto</option>
+			<option value="">Choose account type</option>
+			<option value="@AccountType.Deposit">Debit</option>
+			<option value="@AccountType.Savings">Savings</option>
 		</InputSelect>
 	</div>
 
-	<div className="mb-2">
-		<label>Valuta</label>
+	<div class="form-row">
+		<label>Currency</label>
 		<InputText @bind-Value="_model.Currency"></InputText>		
 	</div>
-	<div className="mb-2">
-		<label>Start saldo</label>
+	<div class="form-row">
+		<label>Starting balance</label>
 		<InputNumber @bind-Value="_model.InitialBalance"></InputNumber>
 	</div>
-	<button type="submit">Skapa konto</button>
+	<button type="submit" class="btn-submit">Create account</button>
 </EditForm>
 
-<h4>Alla konton</h4>
+<h4>All Accounts</h4>
 @if (_accounts.Count == 0)
 {
-	<p>Det finns inga konton ännu, registrera ditt första konto ovan!</p>
+	<p>There are no accounts registered, please create your first account above!</p>
 }
 else
 {
@@ -56,6 +56,7 @@ else
 
 	protected override void OnInitialized()
 	{
+		_accounts = Accountservice.GetAccounts().ToList();
 		base.OnInitialized();
 	}
 
@@ -69,7 +70,7 @@ else
 		}
 		catch (Exception exception)
 		{
-			Console.WriteLine("Du saknar någon input");
+			Console.WriteLine("You are missing an input");
 			throw;
 		}
 		return Task.CompletedTask;

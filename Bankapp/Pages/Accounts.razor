@@ -1,5 +1,48 @@
-﻿<h3>Component</h3>
+﻿@page "/Accounts"
+@inject IAccountservice Accountservice;
 
+
+<h3>Accounts</h3>
+
+
+@if (_accounts.Count == 0)
+{
+	<p>There are no accounts registered, please create your first account at the "Create Account"-page</p>
+}
+else
+{
+	<ul>
+		@foreach (var account in _accounts)
+		{
+			<li>
+				<strong>@account.Name</strong> - @account.AccountType - @account.Balance - @account.Currency
+				<small>(Updated @account.LastUpdated.ToLocalTime())</small>
+			</li>
+		}
+	</ul>
+}
 @code {
+
+	
+	private List<IBankaccount> _accounts = new();
+	protected override void OnInitialized()
+	{
+		_accounts = Accountservice.GetAccounts().ToList();
+		base.OnInitialized();
+	}
+
+	private Task GetAccountAsync()
+	{
+		try
+		{			
+			_accounts = Accountservice.GetAccounts().ToList();			
+		}
+		catch (Exception exception)
+		{
+			Console.WriteLine("You are missing an input");
+			throw;
+		}
+		return Task.CompletedTask;
+	}
 
 }

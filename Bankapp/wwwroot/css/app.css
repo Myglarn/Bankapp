@@ -1,5 +1,8 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css");
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #000000
 }
 
 h1:focus {
@@ -95,9 +98,46 @@ a, .btn-link {
 }
 
     .loading-progress-text:after {
-        content: var(--blazor-load-percentage-text, "Loading");
+        content: var(--blazor-load-percentage-text, "Loggar in på din bankapp");
     }
 
 code {
     color: #c02d76;
+
+    
+}
+.form-row{
+    margin-bottom: 0.5rem
+}
+
+.form-row input{
+    border: none;
+    height: 2.2rem;
+    padding: 0.3rem 0.3rem 0.3rem 0.5rem;
+    width: 250px
+}
+
+.form-row select{
+    border: none;
+    height: 2.2rem;
+    padding: 0.3rem 0.3rem 0.3rem 0.5rem;
+    width: 250px
+}
+.form-row label{
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+
+}
+.btn-submit{
+    background-color:#16ec71;
+    color: #000000;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    margin-bottom: 2rem;
+
 }
