@@ -1,4 +1,5 @@
 ﻿@page "/CreateAccount"
+@using System.ComponentModel.DataAnnotations
 @inject IAccountservice Accountservice;
 
 <h3>Please create an account</h3>
@@ -26,7 +27,7 @@
 	</div>
 	<div class="form-row">
 		<label>Starting balance</label>
-		<InputNumber @bind-Value="_model.InitialBalance"></InputNumber>
+		<InputNumber @bind-Value="_model.InitialBalance"></InputNumber>		
 	</div>
 	<button type="submit" class="btn-submit">Create account</button>
 </EditForm>
@@ -63,11 +64,11 @@ else
 	private async Task CreateAccountAsync()
 	{
 		try
-		{
-			Accountservice.CreatAccount(_model.Name, _model.AccountType, _model.Currency, _model.InitialBalance);
-			_accounts = await Accountservice.GetAccounts();
-			_model.Clear();
-			StateHasChanged();
+		{			
+				await Accountservice.CreatAccount(_model.Name, _model.AccountType, _model.Currency, _model.InitialBalance);				
+				_accounts = await Accountservice.GetAccounts();
+				_model.Clear();
+				StateHasChanged();
 		}
 		catch (Exception exception)
 		{
@@ -79,10 +80,12 @@ else
 
 	private class CreatAccountModel
 	{
+		[Required(ErrorMessage = "Please add an account name")]
 		public string? Name { get; set; }
 		public AccountType AccountType { get; set;}
 		public string? Currency { get; set; } = "SEK";
-		public decimal InitialBalance { get; set; } = 0;
+		[Required(ErrorMessage = "Can't have a negative number")]
+		public decimal? InitialBalance { get; set; } = 0;
 
 		public void Clear()
 		{

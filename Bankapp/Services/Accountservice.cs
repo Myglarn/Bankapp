@@ -40,6 +40,18 @@ namespace Bankapp.Services
             await IsInitialized();
             return _accounts.Cast<Bankaccount>().ToList();
         }
+
+        public async Task DeleteAccount(IBankaccount account)
+        {
+            await IsInitialized();
+
+            var accountToRemove = _accounts.FirstOrDefault(a => a.Id == account.Id);
+            if (accountToRemove != null)
+            {
+                _accounts.Remove(accountToRemove);
+                await SaveAsync();
+            }
+        }
         
     }
 }

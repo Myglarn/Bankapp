@@ -4,5 +4,6 @@
     {
         Task<Bankaccount> CreatAccount(string name, AccountType accountType, string currency, decimal initialBalance);
         Task<List<Bankaccount>> GetAccounts();
+        Task DeleteAccount(IBankaccount account);
     }
 }

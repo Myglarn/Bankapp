@@ -11,19 +11,38 @@
 }
 else
 {
-	<ul>
-		@foreach (var account in _accounts)
-		{
-			<li>
-				<strong>@account.Name</strong> - @account.AccountType - @account.Balance - @account.Currency
-				<small>(Updated @account.LastUpdated.ToLocalTime())</small>
-			</li>
-		}
-	</ul>
+	<table class="accounts-table">
+		<thead>
+			<tr>
+				<th>Account name</th>
+				<th>Account Type</th>
+				<th>Balance</th>
+				<th>Currency</th>
+				<th>Last updated</th>
+				<th></th>
+			</tr>
+		</thead>
+			<tbody>
+				@foreach (var acc in _accounts)
+				{
+				<tr>
+					<td>@acc.Name</td>
+					<td>@acc.AccountType</td>
+					<td>@acc.Balance</td>
+					<td>@acc.Currency</td>
+					<td>@acc.LastUpdated.ToLocalTime()</td>
+					<td>
+						<button class="remove-btn" @onclick="() => RemoveAccount(acc)">Remove</button>
+					</td>
+				</tr>
+				}
+			</tbody>
+	</table>
+	
 }
 @code {
 
-	
+
 	private List<Bankaccount> _accounts = new();
 	protected override async Task OnInitializedAsync()
 	{
@@ -41,7 +60,20 @@ else
 			Console.WriteLine("You are missing an input");
 			throw;
 		}
-		
+
+	}
+	private async Task RemoveAccount(IBankaccount account)
+	{
+		try
+		{
+			await Accountservice.DeleteAccount(account);
+			_accounts = await Accountservice.GetAccounts();
+		}
+		catch (Exception ex)
+		{
+
+			Console.WriteLine(ex);
+		}
 	}
 
 }
