@@ -83,9 +83,9 @@ else
 		[Required(ErrorMessage = "Please add an account name")]
 		public string? Name { get; set; }
 		public AccountType AccountType { get; set;}
-		public string? Currency { get; set; } = "SEK";
-		[Required(ErrorMessage = "Can't have a negative number")]
-		public decimal? InitialBalance { get; set; } = 0;
+		public string? Currency { get; set; } = "SEK";		
+		public decimal InitialBalance { get; set; } = 0;
+
 
 		public void Clear()
 		{

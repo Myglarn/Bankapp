@@ -1,27 +1,17 @@
-﻿namespace Bankapp.Domain
+﻿using System.Diagnostics;
+
+namespace Bankapp.Domain
 {
-    public class Transaction : IBankaccount
+    
+    public class Transaction
     {
-        public Guid Id { get; }
-
-        public AccountType AccountType => throw new NotImplementedException();
-
-        public string Name => throw new NotImplementedException();
-
-        public string Currency => throw new NotImplementedException();
-
-        public decimal Balance => throw new NotImplementedException();
-
-        public DateTime LastUpdated => throw new NotImplementedException();
-
-        public void Deposit(decimal amount)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Withdraw(decimal amount)
-        {
-            throw new NotImplementedException();
-        }
+        public Guid Id { get; } = Guid.NewGuid();
+        public decimal Amount { get; set; }
+        public DateTime DateTimeNow { get; set; }
+        public TransactionType TransactionType { get; set; }
+        public decimal BalanceAfterTransaction { get; set; }
+        public Guid? ToAccount { get; set; } 
+        public Guid? FromAccount { get; set; }        
+        
     }
 }

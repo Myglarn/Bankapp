@@ -35,7 +35,7 @@ namespace Bankapp.Services
             return account;
         }
 
-        public async Task <List<Bankaccount>> GetAccounts()
+        public async Task<List<Bankaccount>> GetAccounts()
         {
             await IsInitialized();
             return _accounts.Cast<Bankaccount>().ToList();
@@ -52,6 +52,12 @@ namespace Bankapp.Services
                 await SaveAsync();
             }
         }
-        
+        public void Transfer(Guid fromAccountId, Guid toAccountId, decimal amount)
+        {
+            var fromAccount = _accounts.FirstOrDefault(x => x.Id == fromAccountId);
+            var toAccount = _accounts.FirstOrDefault(y => y.Id == toAccountId);
+
+            fromAccount.Transfer(toAccount, amount);
+        }
     }
 }

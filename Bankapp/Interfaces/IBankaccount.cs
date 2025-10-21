@@ -14,6 +14,6 @@
 
         void Withdraw(decimal amount);
         void Deposit(decimal amount);
-       
+        void Transfer(Bankaccount to, decimal amount);
     }
 }

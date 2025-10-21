@@ -1,5 +1,42 @@
-﻿<h3>Component</h3>
+﻿@page "/History"
+@inject IAccountservice Accountservice;
+<h3>Account History</h3>
 
 @code {
+	// private readonly TransferFormModel _model = new();
+	// private readonly List<Transaction> _transactions = new();
 
+	// public async Task TransactionAsync()
+	// {
+	// 	try
+	// 	{
+	// 		await Accountservice.Transfer(_model.fromAccountId,_model.toAccountId, _model.amount );
+	// 	}
+	// 	catch (Exception)
+	// 	{
+			
+	// 		throw;
+	// 	}
+	// }
+	// public async Task<List<Bankaccount>> GetAccounts()
+	// {
+	// 	await IsInitialized();
+	// 	return _accounts.Cast<Bankaccount>().ToList();
+	// }
+	// private async Task CreateAccountAsync()
+	// {
+	// 	try
+	// 	{
+	// 		await Accountservice.CreatAccount(_model.Name, _model.AccountType, _model.Currency, _model.InitialBalance);
+	// 		_accounts = await Accountservice.GetAccounts();
+	// 		_model.Clear();
+	// 		StateHasChanged();
+	// 	}
+	// 	catch (Exception exception)
+	// 	{
+	// 		Console.WriteLine("You are missing an input");
+	// 		throw;
+	// 	}
+
+	// }
 }

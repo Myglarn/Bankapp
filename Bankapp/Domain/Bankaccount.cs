@@ -15,8 +15,9 @@ namespace Bankapp.Domain
         public AccountType AccountType { get; private set; }
 
         public DateTime LastUpdated { get; private set; }
+        private readonly List<Transaction> _transactions = new();
 
-        public Bankaccount(string name, AccountType accountType, string currency, decimal initialBalance )
+        public Bankaccount(string name, AccountType accountType, string currency, decimal initialBalance)
         {
             Name = name;
             Currency = currency;
@@ -38,12 +39,37 @@ namespace Bankapp.Domain
         }
         public void Deposit(decimal amount)
         {
-            throw new NotImplementedException();
+            Balance += amount;
+            _transactions.Add(new Transaction { Amount = amount });
         }
 
         public void Withdraw(decimal amount)
         {
-            throw new NotImplementedException();
+            Balance -= amount;
+            _transactions.Add(new Transaction { 
+                Amount = amount           
+            });
+        }
+
+        public void Transfer(Bankaccount to, decimal amount)
+        {
+            Balance -= amount;
+            DateTime dateTimeSender = DateTime.Now;
+            _transactions.Add(new Transaction { 
+                Amount = amount,
+                TransactionType = TransactionType.TransferOut,
+                FromAccount = Id,
+                ToAccount = to.Id                
+            });
+
+            to.Balance += amount;   
+            DateTime dateTimeRec = DateTime.Now;
+            to._transactions.Add(new Transaction
+            {
+                Amount = amount,
+                TransactionType = TransactionType.TransferIn,
+                FromAccount = Id
+            });
         }
     }
 }
