@@ -14,4 +14,5 @@ namespace Bankapp.Domain
         public Guid? FromAccount { get; set; }        
         
     }
+    //Json constructor fixa
 }

@@ -16,6 +16,7 @@ namespace Bankapp.Domain
 
         public DateTime LastUpdated { get; private set; }
         private readonly List<Transaction> _transactions = new();
+        public IReadOnlyList<Transaction> Transactions => _transactions.AsReadOnly();
 
         public Bankaccount(string name, AccountType accountType, string currency, decimal initialBalance)
         {
@@ -71,5 +72,6 @@ namespace Bankapp.Domain
                 FromAccount = Id
             });
         }
+        
     }
 }

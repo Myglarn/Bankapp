@@ -1,42 +1,116 @@
 ﻿@page "/History"
+@using Bankapp.Domain
 @inject IAccountservice Accountservice;
+
 <h3>Account History</h3>
 
-@code {
-	// private readonly TransferFormModel _model = new();
-	// private readonly List<Transaction> _transactions = new();
-
-	// public async Task TransactionAsync()
-	// {
-	// 	try
-	// 	{
-	// 		await Accountservice.Transfer(_model.fromAccountId,_model.toAccountId, _model.amount );
-	// 	}
-	// 	catch (Exception)
-	// 	{
-			
-	// 		throw;
-	// 	}
-	// }
-	// public async Task<List<Bankaccount>> GetAccounts()
-	// {
-	// 	await IsInitialized();
-	// 	return _accounts.Cast<Bankaccount>().ToList();
-	// }
-	// private async Task CreateAccountAsync()
-	// {
-	// 	try
-	// 	{
-	// 		await Accountservice.CreatAccount(_model.Name, _model.AccountType, _model.Currency, _model.InitialBalance);
-	// 		_accounts = await Accountservice.GetAccounts();
-	// 		_model.Clear();
-	// 		StateHasChanged();
-	// 	}
-	// 	catch (Exception exception)
-	// 	{
-	// 		Console.WriteLine("You are missing an input");
-	// 		throw;
-	// 	}
-
-	// }
+@if (_transactionRows.Count == 0)
+{
+	<h4>Du har ingen historik att visa</h4>
 }
+else
+{
+	<table class="accounts-table">
+		<thead>
+			<tr>
+				<th>From</th>
+				<th>Type</th>
+				<th>To</th>
+				<th>Amount</th>
+				<th>When</th>
+				<th>Balance after</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var row in _transactionRows)
+			{
+				<tr>
+					<td>@row.FromName</td>
+					<td>@row.Tx.TransactionType</td>
+					<td>@row.ToName</td>
+					<td>@row.Tx.Amount</td>
+					<td>@row.Tx.DateTimeNow</td>
+					<td>@row.Tx.BalanceAfterTransaction</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private List<Bankaccount> _accounts = new();
+	private List<TransactionRow> _transactionRows = new();
+
+	private class TransactionRow
+	{
+		public Transaction Tx { get; set; } = null!;
+		public string FromName { get; set; } = string.Empty;
+		public string ToName { get; set; } = string.Empty;
+		public DateTime DateTimeNow { get; set; } = DateTime.Now;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		_accounts = await Accountservice.GetAccounts();
+
+		// Flatten transactions from each account and map account ids to names
+		var accountById = _accounts.ToDictionary(a => a.Id, a => a.Name);
+
+		_transactionRows = _accounts
+			.SelectMany(acc => acc.Transactions.Select(tx => new TransactionRow
+			{
+				Tx = tx,
+				FromName = tx.FromAccount.HasValue && accountById.TryGetValue(tx.FromAccount.Value, out var fn) ? fn : string.Empty,
+				ToName = tx.ToAccount.HasValue && accountById.TryGetValue(tx.ToAccount.Value, out var tn) ? tn : string.Empty,
+				DateTimeNow = DateTime.Now
+			}))
+			.OrderByDescending(r => r.Tx.DateTimeNow)
+			.ToList();
+	}
+}
+
+@* @page "/History"
+@using Bankapp.Domain
+@inject IAccountservice Accountservice;
+
+<h3>Account History</h3>
+<ul>
+	@if (_transactions.Any())
+	{
+		<table class="accounts-table">
+			<thead>
+				<tr>
+					<th>Account name</th>
+					<th>Account Type</th>
+					<th>Balance</th>
+					<th>Currency</th>
+					<th>Last updated</th>
+					<th></th>
+				</tr>
+			</thead>
+			@foreach (var trans in _transactions)
+			{
+				<tr>
+					<td>@trans.FromAccount</td>
+					<td>@trans.Amount </td>
+					<td>@trans.ToAccount</td>
+					<td>@trans.DateTimeNow	</td>
+				</tr>
+
+			}
+		</table>
+	}
+	else
+	{
+		<h4>Du har ingen historik att visa</h4>
+	}
+</ul>
+
+
+
+@code {
+
+	private readonly List<Transaction> _transactions = new();
+
+	
+}*@

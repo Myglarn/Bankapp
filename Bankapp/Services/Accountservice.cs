@@ -56,8 +56,14 @@ namespace Bankapp.Services
         {
             var fromAccount = _accounts.FirstOrDefault(x => x.Id == fromAccountId);
             var toAccount = _accounts.FirstOrDefault(y => y.Id == toAccountId);
+            //if (fromAccount == null)
+            //    throw new ArgumentException("From account not found");
+            //if (toAccount == null)
+            //    throw new ArgumentException("To account not found");
 
             fromAccount.Transfer(toAccount, amount);
+            //SaveAsync().Wait();
         }
+        
     }
 }
