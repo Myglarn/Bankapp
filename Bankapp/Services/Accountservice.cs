@@ -26,7 +26,7 @@ namespace Bankapp.Services
 
         private Task SaveAsync() => _storageService.SetItemAsync(StorageKey, _accounts);
 
-        public async Task<Bankaccount> CreatAccount(string name, AccountType accountType, string currency, decimal initialBalance)
+        public async Task<Bankaccount> CreatAccount(string name, AccountType accountType, CurrencyType currency, decimal initialBalance)
         {
             await IsInitialized();
             var account = new Bankaccount(name, accountType, currency, initialBalance);
@@ -49,10 +49,10 @@ namespace Bankapp.Services
             if (accountToRemove != null)
             {
                 _accounts.Remove(accountToRemove);
-                await SaveAsync();
+                await SaveAsync();                
             }
         }
-        public void Transfer(Guid fromAccountId, Guid toAccountId, decimal amount)
+        public async Task Transfer(Guid fromAccountId, Guid toAccountId, decimal amount)
         {
             var fromAccount = _accounts.FirstOrDefault(x => x.Id == fromAccountId);
             var toAccount = _accounts.FirstOrDefault(y => y.Id == toAccountId);
@@ -64,6 +64,19 @@ namespace Bankapp.Services
             fromAccount.Transfer(toAccount, amount);
             //SaveAsync().Wait();
         }
-        
+        public async Task Deposit(Guid id, decimal amount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task Withdraw(Guid id, decimal amount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Bankaccount> CreatAccount(string name, AccountType accountType, string currency, decimal initialBalance)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

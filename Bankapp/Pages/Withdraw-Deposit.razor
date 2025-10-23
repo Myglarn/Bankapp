@@ -1,0 +1,115 @@
+﻿@page "/Withdraw-Deposit"
+@inject IAccountservice AccountService
+
+<h1>Deposit / Withdraw</h1>
+<EditForm Model="_model" OnValidSubmit="SubmitTransactionAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-row">
+        <label>Select Account:</label>
+        <InputSelect class="inputfield" @bind-Value="_model.SelectedAccountId">
+            <option value="@Guid.Empty">Choose account</option>
+            @foreach (var account in _accounts)
+            {
+                <option value="@account.Id">
+                    @account.Name (@account.Balance.ToString("F2") @account.Currency)
+                </option>
+            }
+        </InputSelect>
+    </div>
+    <div class="form-row">
+        <label>Transaction Type:</label>
+        <InputSelect class="inputfield" @bind-Value="_model.TransactionType">
+            <option value="">Choose type</option>
+            <option value="@TransactionType.Deposit">Deposit</option>
+            <option value="@TransactionType.Withdraw">Withdraw</option>
+        </InputSelect>
+    </div>
+    <div class="form-row">
+        <label>Amount:</label>
+        <InputNumber class="inputfield" @bind-Value="_model.Amount" />
+    </div>
+    <button class="btn-submit" type="submit">Apply</button>
+</EditForm>
+@if (!string.IsNullOrEmpty(_message))
+{
+    <div class="accountfield">
+        <p class="@(_isSuccess ? "success-message" : "error-message")">@_message</p>
+    </div>
+}
+
+@code {
+    private readonly TransactionModel _model = new();
+    private List<Bankaccount> _accounts = new();
+    private string? _message;
+    private bool _isSuccess;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAccountsAsync();
+    }
+
+    private async Task LoadAccountsAsync()
+    {
+        _accounts = await AccountService.GetAccounts();
+    }
+
+    private async Task SubmitTransactionAsync()
+    {
+        try
+        {
+            if (_model.SelectedAccountId == Guid.Empty)
+            {
+                _message = "Please select an account.";
+                _isSuccess = false;
+                return;
+            }
+            if (_model.Amount is null or <= 0)
+            {
+                _message = "Amount must be greater than zero.";
+                _isSuccess = false;
+                return;
+            }
+
+            var selectedAccountId = _model.SelectedAccountId;
+
+            // Performs transaction
+            switch (_model.TransactionType)
+            {
+                case TransactionType.Deposit:
+                    AccountService.Deposit(_model.SelectedAccountId, _model.Amount!.Value); //tidigare som DepositAsync
+                    _message = $"Deposited {_model.Amount} successfully!";
+                    _isSuccess = true;
+                    break;
+
+                case TransactionType.Withdraw:
+                    AccountService.Withdraw(_model.SelectedAccountId, _model.Amount!.Value);//Tidigare som WithdrawAsync
+                    _message = $"Withdrew {_model.Amount} successfully!";
+                    _isSuccess = true;
+                    break;
+
+                default:
+                    _message = "Please select a transaction type.";
+                    _isSuccess = false;
+                    return;
+            }
+
+            await LoadAccountsAsync();
+            _model.SelectedAccountId = selectedAccountId;
+            _model.Amount = null;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _message = $"Error: {ex.Message}";
+            _isSuccess = false;
+        }
+    }
+
+    private class TransactionModel
+    {
+        public Guid SelectedAccountId { get; set; } = Guid.Empty;
+        public TransactionType TransactionType { get; set; }
+        public decimal? Amount { get; set; }
+    }
+}

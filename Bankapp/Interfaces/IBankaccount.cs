@@ -8,7 +8,7 @@
         Guid Id { get; }
         AccountType AccountType { get; }
         string Name { get; }
-        string Currency {  get; }
+        CurrencyType Currency {  get; }
         decimal Balance {  get; }
         DateTime LastUpdated { get; }
 
