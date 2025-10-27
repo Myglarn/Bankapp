@@ -1,116 +1,171 @@
 ﻿@page "/History"
 @using Bankapp.Domain
 @inject IAccountservice Accountservice;
-
+<!--Kommentarer -->
 <h3>Account History</h3>
 
-@if (_transactionRows.Count == 0)
+@if (_accounts.Count == 0)
 {
-	<h4>Du har ingen historik att visa</h4>
+	<p>No accounts</p>
 }
 else
 {
-	<table class="accounts-table">
-		<thead>
-			<tr>
-				<th>From</th>
-				<th>Type</th>
-				<th>To</th>
-				<th>Amount</th>
-				<th>When</th>
-				<th>Balance after</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var row in _transactionRows)
-			{
-				<tr>
-					<td>@row.FromName</td>
-					<td>@row.Tx.TransactionType</td>
-					<td>@row.ToName</td>
-					<td>@row.Tx.Amount</td>
-					<td>@row.Tx.DateTimeNow</td>
-					<td>@row.Tx.BalanceAfterTransaction</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-}
+	{/*Blabla*/}
+	<div class="form-row">
+		<label>Choose account</label>
+		<InputSelect TValue="Guid" class="form-select" id="accountSelect" @bind-Value="SelectedAccountId">
+			@foreach (var account in _accounts)
+		{
+			<option value="@account.Id">@account.Name - Balance: @account.Balance</option>
+		}
+		</InputSelect>
+	</div>
 
-@code {
-	private List<Bankaccount> _accounts = new();
-	private List<TransactionRow> _transactionRows = new();
-
-	private class TransactionRow
+	
+	@if (!_selectedAccount.Transactions.Any())
 	{
-		public Transaction Tx { get; set; } = null!;
-		public string FromName { get; set; } = string.Empty;
-		public string ToName { get; set; } = string.Empty;
-		public DateTime DateTimeNow { get; set; } = DateTime.Now;
-	}
-
-	protected override async Task OnInitializedAsync()
-	{
-		_accounts = await Accountservice.GetAccounts();
-
-		// Flatten transactions from each account and map account ids to names
-		var accountById = _accounts.ToDictionary(a => a.Id, a => a.Name);
-
-		_transactionRows = _accounts
-			.SelectMany(acc => acc.Transactions.Select(tx => new TransactionRow
-			{
-				Tx = tx,
-				FromName = tx.FromAccount.HasValue && accountById.TryGetValue(tx.FromAccount.Value, out var fn) ? fn : string.Empty,
-				ToName = tx.ToAccount.HasValue && accountById.TryGetValue(tx.ToAccount.Value, out var tn) ? tn : string.Empty,
-				DateTimeNow = DateTime.Now
-			}))
-			.OrderByDescending(r => r.Tx.DateTimeNow)
-			.ToList();
-	}
-}
-
-@* @page "/History"
-@using Bankapp.Domain
-@inject IAccountservice Accountservice;
-
-<h3>Account History</h3>
-<ul>
-	@if (_transactions.Any())
-	{
-		<table class="accounts-table">
-			<thead>
-				<tr>
-					<th>Account name</th>
-					<th>Account Type</th>
-					<th>Balance</th>
-					<th>Currency</th>
-					<th>Last updated</th>
-					<th></th>
-				</tr>
-			</thead>
-			@foreach (var trans in _transactions)
-			{
-				<tr>
-					<td>@trans.FromAccount</td>
-					<td>@trans.Amount </td>
-					<td>@trans.ToAccount</td>
-					<td>@trans.DateTimeNow	</td>
-				</tr>
-
-			}
-		</table>
+		<p>No transactions found</p>
 	}
 	else
 	{
-		<h4>Du har ingen historik att visa</h4>
+		<table class="table table-sm">
+			<thead>
+				<tr>
+					<th>
+						<button class="btn btn-sm" @onclick="() => SetSort(SortKey.Date)">
+							Sort: Date @(currentKey == SortKey.Date ? (descending ? "⯆" : "⯅") : "")
+						</button>
+					</th>
+					<th>
+						<button class="btn btn-sm" @onclick="() => SetSort(SortKey.Amount)">
+							Sort: Amount @(currentKey == SortKey.Amount ? (descending ? "⯆" : "⯅") : "")
+						</button>
+					</th>
+					<th>
+						<button class="btn btn-sm" @onclick="() => SetSort(SortKey.TransactionType)">
+							Sort: Transaction Type @(currentKey == SortKey.TransactionType ? (descending ? "⯆" : "⯅") : "")
+						</button>
+					</th>
+					<th>
+						<button class="btn btn-sm" @onclick="() => SetSort(SortKey.BalanceAfterTransaction)">
+							Sort: Balance after transaction @(currentKey == SortKey.BalanceAfterTransaction ? (descending ? "⯆" : "⯅") : "")
+						</button>
+					</th>
+					<th>From -> To</th>					
+				</tr>
+			</thead>
+			<tbody>
+				@foreach(var transaction in sortedTransaction())
+				{
+					<tr>
+						<td>@transaction.DateTimeNow.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+						<td>@transaction.Amount</td>
+						<td>@transaction.TransactionType</td>
+						<td>@transaction.BalanceAfterTransaction</td>
+					
+                        <td>
+							@if (transaction.FromAccount.HasValue && transaction.ToAccount.HasValue)
+							{
+								<span>@(transaction.FromAccount.Value.ToString()[..4]) -> @(transaction.ToAccount.Value.ToString()[..4])</span>
+							}
+							else if (transaction.FromAccount.HasValue)
+							{
+								<span>@(transaction.FromAccount.Value.ToString()[..4]) -> --</span>
+							}
+							else if (transaction.ToAccount.HasValue)
+							{
+								<span>-- -> @(transaction.ToAccount.Value.ToString()[..4])</span>
+							}
+							else
+							{
+								<span>--</span>
+							}
+                        </td>
+					</tr>
+				}
+			</tbody>
+		</table>
 	}
-</ul>
 
+}
+<!--Code for the deisgn-->
+@code{
+	//Instance variables
+	private List<Bankaccount> _accounts = new();
+	private List<Transaction>? _transactions = new();
+	private SortKey currentKey = SortKey.Date;
+	private IBankaccount? _selectedAccount;
+	private Guid _selectedAccountId;
 
+	//startvärde för sorteringen
 
-@code {
+	private bool descending = true;
 
-	private readonly List<Transaction> _transactions = new();
+	//Sorteringsvarianter
+	private enum SortKey
+	{
+		Date,
+		Amount,
+		TransactionType,
+		BalanceAfterTransaction
+	}
 
-	
-}*@
+	private void SetSort(SortKey sortKey)
+	{
+		if (currentKey == sortKey)
+		{
+			descending = !descending;
+		}
+		else
+		{
+			currentKey = sortKey;
+			descending = true;
+		}
+	}
+
+	private Guid SelectedAccountId
+	{
+		get => _selectedAccountId;
+		set
+		{
+			if (_selectedAccountId == value)
+				return;
+
+			_selectedAccountId = value;
+			_selectedAccount = _accounts.FirstOrDefault(account => account.Id == value);
+			// _selectedAccount.Transactions
+		}
+	}
+	protected override async Task OnInitializedAsync()
+	{
+		var accounts = await Accountservice.GetAccounts();
+		_accounts = accounts.Cast<Bankaccount>().ToList();
+		_transactions = new();
+		
+		//Om det finns konton i vår lista, välj första för att visa i UI
+		if (_accounts.Count > 0)
+		{
+			_selectedAccountId = _accounts[0].Id;
+			_selectedAccount = _accounts[0];
+		}		
+	}
+
+	private IEnumerable<Transaction> sortedTransaction()
+	{
+		if (_selectedAccount == null)
+		{
+			return Enumerable.Empty<Transaction>();
+		}
+		//Sortera listan, Datum och belopp
+		var sortedList = _selectedAccount.Transactions.AsEnumerable();
+		sortedList = currentKey switch
+		{
+			SortKey.Amount => (descending ? sortedList.OrderByDescending(t => t.Amount) : sortedList.OrderBy(t => t.Amount)),
+			SortKey.Date => (descending ? sortedList.OrderByDescending(t => t.DateTimeNow) : sortedList.OrderBy(t => t.DateTimeNow)),
+			SortKey.TransactionType => (descending ? sortedList.OrderByDescending(t => t.TransactionType) : sortedList.OrderBy(t => t.TransactionType)),
+			SortKey.BalanceAfterTransaction => (descending ? sortedList.OrderByDescending(t => t.BalanceAfterTransaction) : sortedList.OrderBy(t => t.BalanceAfterTransaction))
+		};
+
+		return sortedList;
+	}
+}

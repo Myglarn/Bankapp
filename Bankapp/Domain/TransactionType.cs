@@ -1,10 +1,11 @@
 ﻿namespace Bankapp.Domain
 {
-    public enum TransactionType 
-    { 
-        Deposit, 
-        Withdraw, 
+    public enum TransactionType
+    {
+        Deposit,
+        Withdraw,
         TransferIn,
-        TransferOut
+        TransferOut,
+        Transfer
     }
 }

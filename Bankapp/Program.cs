@@ -1,4 +1,3 @@
-using Bankapp.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -12,9 +11,10 @@ namespace Bankapp
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
+            //Register services for DI
             builder.Services.AddScoped<IAccountservice, Accountservice>();
             builder.Services.AddScoped<IStorageservice, Storageservice>();
-            
+
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             await builder.Build().RunAsync();

@@ -14,12 +14,12 @@ namespace Bankapp.Services
             Converters = { new JsonStringEnumConverter() }
         };
 
-        public Storageservice(IJSRuntime jSRuntime) => _jSRuntime = jSRuntime;        
+        public Storageservice(IJSRuntime jSRuntime) => _jSRuntime = jSRuntime;
 
         public async Task SetItemAsync<T>(string key, T value)
         {
             var json = JsonSerializer.Serialize(value, _jsonSerializerOptions);
-            await _jSRuntime.InvokeVoidAsync("localStorage.setItem", key , json);
+            await _jSRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
         }
         public async Task<T> GetItemAsync<T>(string key)
         {

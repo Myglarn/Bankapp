@@ -1,34 +1,38 @@
-﻿using Bankapp.Interfaces;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Bankapp.Domain
 {
+    /// <summary>
+    /// Bankaccount domain, hanterar transaktioner och sparar egenskaper till bankkontot.
+    /// </summary>
     public class Bankaccount : IBankaccount
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
-       
+
         public string Name { get; private set; }
 
-        public string Currency { get; private set; }
+        public CurrencyType Currency { get; private set; }
 
         public decimal Balance { get; private set; }
         public AccountType AccountType { get; private set; }
 
         public DateTime LastUpdated { get; private set; }
-        private readonly List<Transaction> _transactions = new();
-        public IReadOnlyList<Transaction> Transactions => _transactions.AsReadOnly();
 
-        public Bankaccount(string name, AccountType accountType, string currency, decimal initialBalance)
+        public List<Transaction> Transactions { get; private set; } = new();
+
+        //Constructor
+        public Bankaccount(string name, AccountType accountType, CurrencyType currency, decimal initialBalance)
         {
             Name = name;
             Currency = currency;
             Balance = initialBalance;
             AccountType = accountType;
             LastUpdated = DateTime.Now;
+
         }
 
         [JsonConstructor]
-        public Bankaccount(Guid id, string name, AccountType accountType, string currency, decimal balance) 
+        public Bankaccount(Guid id, string name, AccountType accountType, CurrencyType currency, decimal balance, List<Transaction>? transactions)
         {
             Id = id;
             Name = name;
@@ -36,42 +40,79 @@ namespace Bankapp.Domain
             Balance = balance;
             AccountType = accountType;
             LastUpdated = DateTime.Now;
+            Transactions = transactions ?? new List<Transaction>();
 
         }
+        /// <summary>
+        /// Hantering av insättningar till bankkontots saldo
+        /// </summary>
+        /// <param name="amount">Specifierad summa</param>
         public void Deposit(decimal amount)
         {
+            //felhantering if-sats
             Balance += amount;
-            _transactions.Add(new Transaction { Amount = amount });
-        }
-
-        public void Withdraw(decimal amount)
-        {
-            Balance -= amount;
-            _transactions.Add(new Transaction { 
-                Amount = amount           
+            Transactions.Add(new Transaction
+            {
+                Amount = amount,
+                ToAccount = Id,
+                FromAccount = null,
+                BalanceAfterTransaction = Balance,
+                TransactionType = TransactionType.Deposit,
+                DateTimeNow = DateTime.Now
             });
         }
+        /// <summary>
+        /// Hantering av uttag från bankkontots saldo
+        /// </summary>
+        /// <param name="amount"></param>
+        public void Withdraw(decimal amount)
+        {
 
+            //felhantering if-sats
+            Balance -= amount;
+            Transactions.Add(new Transaction
+            {
+                Amount = amount,
+                FromAccount = Id,
+                ToAccount = null,
+                BalanceAfterTransaction = Balance,
+                TransactionType = TransactionType.Withdraw,
+                DateTimeNow = DateTime.Now
+            });
+        }
+        /// <summary>
+        /// Sköter överföringar mellan olika konton
+        /// </summary>
+        /// <param name="to">Vilket konto som ska motta överföringen</param>
+        /// <param name="amount">Summan som ska skickas</param>
         public void Transfer(Bankaccount to, decimal amount)
         {
+            //Felhantering!!!
+            //Från vilket konto
             Balance -= amount;
             DateTime dateTimeSender = DateTime.Now;
-            _transactions.Add(new Transaction { 
+            Transactions.Add(new Transaction
+            {
                 Amount = amount,
                 TransactionType = TransactionType.TransferOut,
                 FromAccount = Id,
-                ToAccount = to.Id                
+                ToAccount = to.Id,
+                DateTimeNow = DateTime.Now,
+                BalanceAfterTransaction = Balance
             });
 
-            to.Balance += amount;   
+            //Till vilket konto
+            to.Balance += amount;
             DateTime dateTimeRec = DateTime.Now;
-            to._transactions.Add(new Transaction
+            to.Transactions.Add(new Transaction
             {
                 Amount = amount,
                 TransactionType = TransactionType.TransferIn,
-                FromAccount = Id
+                FromAccount = Id,
+                ToAccount = to.Id,
+                DateTimeNow = DateTime.Now,
+                BalanceAfterTransaction = to.Balance
             });
         }
-        
     }
 }

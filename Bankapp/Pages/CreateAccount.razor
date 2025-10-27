@@ -23,7 +23,11 @@
 
 	<div class="form-row">
 		<label>Currency</label>
-		<InputText @bind-Value="_model.Currency"></InputText>		
+		<InputSelect @bind-Value="_model.Currency">
+			<option value="@CurrencyType.SEK">SEK</option>
+			<option value="@CurrencyType.EUR">EUR</option>
+			<option value="@CurrencyType.DOLLAR">DOLLAR</option>
+		</InputSelect>		
 	</div>
 	<div class="form-row">
 		<label>Starting balance</label>
@@ -59,23 +63,23 @@ else
 	{
 		_accounts = await Accountservice.GetAccounts();
 	}
-	
+
 
 	private async Task CreateAccountAsync()
 	{
 		try
 		{			
-				await Accountservice.CreatAccount(_model.Name, _model.AccountType, _model.Currency, _model.InitialBalance);				
-				_accounts = await Accountservice.GetAccounts();
-				_model.Clear();
-				StateHasChanged();
+			await Accountservice.CreatAccount(_model.Name, _model.AccountType, _model.Currency, _model.InitialBalance);				
+			_accounts = await Accountservice.GetAccounts();
+			_model.Clear();
+			StateHasChanged();
 		}
 		catch (Exception exception)
 		{
 			Console.WriteLine("You are missing an input");
 			throw;
 		}
-		
+
 	}
 
 	private class CreatAccountModel
@@ -83,7 +87,7 @@ else
 		[Required(ErrorMessage = "Please add an account name")]
 		public string? Name { get; set; }
 		public AccountType AccountType { get; set;}
-		public string? Currency { get; set; } = "SEK";		
+		public CurrencyType Currency { get; set; }	
 		public decimal InitialBalance { get; set; } = 0;
 
 
@@ -91,7 +95,7 @@ else
 		{
 			Name = string.Empty;
 			AccountType = AccountType.Savings;
-			Currency = "SEK";
+			Currency = default;
 			InitialBalance = 0;
 		}
 	}
