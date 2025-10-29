@@ -3,6 +3,6 @@
     public enum AccountType
     {
         Savings,
-        Deposit
+        Checking
     }
 }

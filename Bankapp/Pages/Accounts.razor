@@ -18,6 +18,8 @@ else
 				<th>Account Type</th>
 				<th>Balance</th>
 				<th>Currency</th>
+				<th>Interest rate</th>
+				<th>Accumulated interest</th>
 				<th>Last updated</th>
 				<th></th>
 			</tr>
@@ -30,6 +32,15 @@ else
 					<td>@acc.AccountType</td>
 					<td>@acc.Balance</td>
 					<td>@acc.Currency</td>
+					<td>
+						@if(acc.AccountType == AccountType.Savings)
+						{
+							@(Bankaccount.InterestRate * 100)
+						}
+					</td>
+					<td>
+						@acc.ApplyInterest().ToString("C")
+					</td>
 					<td>@acc.LastUpdated.ToLocalTime()</td>
 					<td>
 						<button class="remove-btn" @onclick="() => RemoveAccount(acc)">Remove</button>

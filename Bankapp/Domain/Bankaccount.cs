@@ -19,6 +19,7 @@ namespace Bankapp.Domain
         public DateTime LastUpdated { get; private set; }
 
         public List<Transaction> Transactions { get; private set; } = new();
+        public const decimal InterestRate = 0.02m;
 
         //Constructor
         public Bankaccount(string name, AccountType accountType, CurrencyType currency, decimal initialBalance)
@@ -113,6 +114,14 @@ namespace Bankapp.Domain
                 DateTimeNow = DateTime.Now,
                 BalanceAfterTransaction = to.Balance
             });
+        }
+        public decimal ApplyInterest()
+        {
+            if (AccountType != AccountType.Savings)
+            {
+                return 0m;
+            }
+            return Balance * InterestRate;
         }
     }
 }
