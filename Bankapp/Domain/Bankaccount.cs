@@ -50,8 +50,11 @@ namespace Bankapp.Domain
         /// <param name="amount">Specifierad summa</param>
         public void Deposit(decimal amount)
         {
-            //felhantering if-sats
-            Balance += amount;
+            if (amount <= 0)
+            {
+                throw new ArgumentException("Amount must be greater than 0");
+            }            
+                Balance += amount;
             Transactions.Add(new Transaction
             {
                 Amount = amount,
@@ -69,8 +72,15 @@ namespace Bankapp.Domain
         public void Withdraw(decimal amount)
         {
 
-            //felhantering if-sats
-            Balance -= amount;
+            if (amount <= 0)
+            {
+                throw new ArgumentException("Amount must be greater than 0");
+            }
+            else if (amount > Balance)
+            {
+                throw new ArgumentException("Insufficient funds");
+            }
+                Balance -= amount;
             Transactions.Add(new Transaction
             {
                 Amount = amount,
@@ -88,7 +98,19 @@ namespace Bankapp.Domain
         /// <param name="amount">Summan som ska skickas</param>
         public void Transfer(Bankaccount to, decimal amount)
         {
-            //Felhantering!!!
+            //Felhantering
+            if (amount <= 0)
+            {
+                throw new ArgumentException("Amount must be greater than 0");
+            }
+            else if (amount > Balance)
+            {
+                throw new ArgumentException("Insufficient funds");
+            }
+            else if (to == null)
+            {
+                throw new ArgumentException("No recieving account found");
+            }
             //Från vilket konto
             Balance -= amount;
             DateTime dateTimeSender = DateTime.Now;

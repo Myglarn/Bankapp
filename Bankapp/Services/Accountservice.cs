@@ -65,6 +65,10 @@ namespace Bankapp.Services
             {
                 throw new ArgumentException("To account not found");
             }
+            if (fromAccount == toAccount)
+            {
+                throw new ArgumentException("You can't transfer money to yourself, you idiot!");
+            }
             fromAccount.Transfer(toAccount, amount);
             _storageService.SetItemAsync(StorageKey, _accounts);
         }
@@ -74,7 +78,7 @@ namespace Bankapp.Services
             var fromAccount = _accounts.FirstOrDefault(x => x.Id == fromAccountId);
             if (fromAccount == null)
             {
-                throw new ArgumentException("Account not found");
+                throw new ArgumentException("You must select an account");
             }
             fromAccount.Withdraw(amount);
             _storageService.SetItemAsync(StorageKey, _accounts);
@@ -85,7 +89,7 @@ namespace Bankapp.Services
             var toAccount = _accounts.FirstOrDefault(x => x.Id == toAccountId);
             if (toAccount == null)
             {
-                throw new ArgumentException("Account not found");
+                throw new ArgumentException("You must select an account");
             }
             toAccount.Deposit(amount);
             _storageService.SetItemAsync(StorageKey, _accounts);

@@ -30,7 +30,7 @@ else
 							 @bind-Value="_model.FromAccountId"
 							 class="form-select"
 							 @onchange="HandleFormChanged">
-						<option value="Guid.Empty">Choose account..</option>
+					<option value="@Guid.Empty">-- Select an account --</option>
 						@foreach (var account in _accounts)
 						{
 						<option value="@account.Id">@account.Name - Balance: @account.Balance</option>
@@ -43,7 +43,7 @@ else
 							 @bind-Value="_model.ToAccountId"
 							 class="form-select"
 							 disabled="@(_model.FromAccountId == Guid.Empty)">
-						<option value="@Guid.Empty">Choose account</option>
+					<option value="@Guid.Empty">-- Select an account --</option>
 						@foreach (var account in _toAccounts)
 						{
 							<option value="@account.Id">@account.Name - Balance: @account.Balance</option>
@@ -82,6 +82,17 @@ else
 			<label>Amount</label>
 			<InputNumber TValue="decimal" @bind-Value="_model.Amount" class="form-control"></InputNumber>
 		</div>
+		<div>
+			@if (!string.IsNullOrEmpty(ErrorM))
+			{
+				@ErrorM
+			}
+			@if(!string.IsNullOrEmpty(SuccessM))
+			{
+				@SuccessM
+			}
+		</div>
+		
 
 		@if (_model.TransactionType == TransactionType.Transfer)
 		{
@@ -114,6 +125,8 @@ else
 	private readonly TransferFormModel _model = new();
 	private List<Bankaccount> _accounts = new();
 	private List<Bankaccount> _toAccounts = new();
+	private string? ErrorM;
+	private string? SuccessM;
 
 	private class TransferFormModel
 	{
@@ -131,32 +144,24 @@ else
 	}
 
 	private async Task OnSubmitAsync()
-	{	
+	{
+		ErrorM = null;
+		SuccessM = null;
 
 		try
 		{
 			switch (_model.TransactionType)
 			{
-				case TransactionType.Transfer:
-					if (_model.FromAccountId == Guid.Empty || _model.ToAccountId == Guid.Empty)
-					{
-						StateHasChanged();
-						return;
-					}
-					if (_model.FromAccountId == _model.ToAccountId)
-					{
-						StateHasChanged();
-						return;
-					}
-					Accountservice.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount);
+				case TransactionType.Transfer:					
+					Accountservice.Transfer(_model.FromAccountId, _model.ToAccountId, _model.Amount);					
 					break;
 
 				case TransactionType.Deposit:
-					Accountservice.Deposit(_model.FromAccountId, _model.Amount);
+					Accountservice.Deposit(_model.FromAccountId, _model.Amount);					
 					break;
 
 				case TransactionType.Withdraw:
-					Accountservice.Withdraw(_model.FromAccountId, _model.Amount);
+					Accountservice.Withdraw(_model.FromAccountId, _model.Amount);					
 					break;
 
 				default:
@@ -164,17 +169,21 @@ else
 			}			
 			//uppdatera vår lista
 			_accounts = await Accountservice.GetAccounts();
+			_model.Amount = 0;
+			ErrorM = null;
+			
 
 			//Visa nån bekräftelse
-			var from = _accounts.First(x => x.Id == _model.FromAccountId);
-			var to = _accounts.First(x => x.Id == _model.ToAccountId);
+			var from = _accounts.FirstOrDefault(x => x.Id == _model.FromAccountId);
+			var to = _accounts.FirstOrDefault(x => x.Id == _model.ToAccountId);
 
 			_model.Amount = 0;
+			SuccessM = "Transaction completed";
 			StateHasChanged();
 		}
-		catch (Exception ex)
+		catch (ArgumentException ex)
 		{
-			Console.WriteLine(ex.Message);
+			ErrorM = ex.Message;
 		}
 		return;
 	}
