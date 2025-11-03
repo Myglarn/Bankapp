@@ -1,5 +1,8 @@
 ﻿namespace Bankapp.Domain
 {
+    /// <summary>
+    /// Represents a financial transaction, including details such as the amount, type, and accounts involved.
+    /// </summary>    
     public class Transaction
     {
         public Guid Id { get; } = Guid.NewGuid();

@@ -1,18 +1,29 @@
 ﻿@page "/"
 
-
+<!-- Displays the Home page -->
 <PageTitle>Suedbank</PageTitle>
 
 <style>
     .Texthome{
         height: 100vh;      
+        
+        
+        max-width: 100%;
+        object-fit: cover;
+        
+    }
+    .Background{
         background-image: url('/stonks-meme-template-1152x648.jpg');
-        background-color: transparent;
+        opacity: 0.5;
+        background-repeat: no-repeat;
+        background-position:
     }
 </style>
 
 @* <img src="/stonks-meme-template-1152x648.jpg" class="background-image" alt="Background" /> *@
-<div class="Texthome">
-    <h1>Welcome to Suedbank </h1>
-    <h4> With a CEO who DOESN'T mess with your money!</h4>
+<div class="Background">
+    <div class="Texthome">
+        <h1>Welcome to Suedbank </h1>
+        <h4> With a CEO who DOESN'T mess with your money!</h4>
+    </div>
 </div>

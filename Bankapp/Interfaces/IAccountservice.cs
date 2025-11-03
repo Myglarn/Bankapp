@@ -1,5 +1,8 @@
 ﻿namespace Bankapp.Interfaces
 {
+    /// <summary>
+    /// Interface for Accountservice containging methods
+    /// </summary>
     public interface IAccountservice
     {
         Task<Bankaccount> CreatAccount(string name, AccountType accountType, CurrencyType currency, decimal initialBalance);

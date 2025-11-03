@@ -1,27 +1,22 @@
 ﻿using System.Text.Json.Serialization;
-
 namespace Bankapp.Domain
 {
-    /// <summary>
-    /// Bankaccount domain, hanterar transaktioner och sparar egenskaper till bankkontot.
+    /// <summary>    
+    /// Bank account class, contains methods for transactions and interest rate 
+    /// and contructors for localstorage   
     /// </summary>
     public class Bankaccount : IBankaccount
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
-
         public string Name { get; private set; }
-
         public CurrencyType Currency { get; private set; }
-
         public decimal Balance { get; private set; }
         public AccountType AccountType { get; private set; }
-
         public DateTime LastUpdated { get; private set; }
-
         public List<Transaction> Transactions { get; private set; } = new();
         public const decimal InterestRate = 0.02m;
 
-        //Constructor
+        // Constructor
         public Bankaccount(string name, AccountType accountType, CurrencyType currency, decimal initialBalance)
         {
             Name = name;
@@ -29,32 +24,32 @@ namespace Bankapp.Domain
             Balance = initialBalance;
             AccountType = accountType;
             LastUpdated = DateTime.Now;
-
         }
 
         [JsonConstructor]
-        public Bankaccount(Guid id, string name, AccountType accountType, CurrencyType currency, decimal balance, List<Transaction>? transactions)
+        public Bankaccount(Guid id, string name, AccountType accountType, CurrencyType currency, DateTime lastUpdated, decimal balance, List<Transaction>? transactions)
         {
             Id = id;
             Name = name;
             Currency = currency;
             Balance = balance;
             AccountType = accountType;
-            LastUpdated = DateTime.Now;
+            LastUpdated = lastUpdated;
             Transactions = transactions ?? new List<Transaction>();
-
         }
+
         /// <summary>
-        /// Hantering av insättningar till bankkontots saldo
-        /// </summary>
-        /// <param name="amount">Specifierad summa</param>
+        /// Handles deposits to accounts
+        /// </summary>        
         public void Deposit(decimal amount)
         {
             if (amount <= 0)
             {
+                Console.WriteLine("Argument Exception in Bankaccount: Amount field needs to be greater than 0");
                 throw new ArgumentException("Amount must be greater than 0");
-            }            
-                Balance += amount;
+            }
+            
+            Balance += amount;
             Transactions.Add(new Transaction
             {
                 Amount = amount,
@@ -65,22 +60,23 @@ namespace Bankapp.Domain
                 DateTimeNow = DateTime.Now
             });
         }
+
         /// <summary>
-        /// Hantering av uttag från bankkontots saldo
-        /// </summary>
-        /// <param name="amount"></param>
+        /// Handles withdraws from accounts
+        /// </summary>        
         public void Withdraw(decimal amount)
         {
-
             if (amount <= 0)
             {
+                Console.WriteLine("Argument Exception in Bankaccount: Amount needs to be greater than 0");
                 throw new ArgumentException("Amount must be greater than 0");
-            }
+            }            
             else if (amount > Balance)
             {
+                Console.WriteLine("Argument Exception in Bankaccount: Insufficient funds in the selected account");
                 throw new ArgumentException("Insufficient funds");
             }
-                Balance -= amount;
+            Balance -= amount;
             Transactions.Add(new Transaction
             {
                 Amount = amount,
@@ -91,27 +87,27 @@ namespace Bankapp.Domain
                 DateTimeNow = DateTime.Now
             });
         }
+
         /// <summary>
-        /// Sköter överföringar mellan olika konton
+        /// Manages transfers between accounts
         /// </summary>
-        /// <param name="to">Vilket konto som ska motta överföringen</param>
-        /// <param name="amount">Summan som ska skickas</param>
+        /// <param name="to">Recieving account</param>
+        /// <param name="amount">amount to send</param>
         public void Transfer(Bankaccount to, decimal amount)
         {
-            //Felhantering
+            // Error messages
             if (amount <= 0)
             {
+                Console.WriteLine("Argument Exception in Bankaccount: Amount needs to be greater than 0");
                 throw new ArgumentException("Amount must be greater than 0");
             }
             else if (amount > Balance)
             {
+                Console.WriteLine("Argument Exception in Bankaccount: Insufficient funds in the selected account");
                 throw new ArgumentException("Insufficient funds");
-            }
-            else if (to == null)
-            {
-                throw new ArgumentException("No recieving account found");
-            }
-            //Från vilket konto
+            }            
+
+            // From account
             Balance -= amount;
             DateTime dateTimeSender = DateTime.Now;
             Transactions.Add(new Transaction
@@ -124,7 +120,7 @@ namespace Bankapp.Domain
                 BalanceAfterTransaction = Balance
             });
 
-            //Till vilket konto
+            // To account
             to.Balance += amount;
             DateTime dateTimeRec = DateTime.Now;
             to.Transactions.Add(new Transaction
@@ -137,6 +133,11 @@ namespace Bankapp.Domain
                 BalanceAfterTransaction = to.Balance
             });
         }
+
+        /// <summary>
+        /// Handles interest rate
+        /// </summary>
+        /// <returns>interest rate if the account is of type "Savings"</returns>
         public decimal ApplyInterest()
         {
             if (AccountType != AccountType.Savings)

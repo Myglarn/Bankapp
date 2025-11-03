@@ -1,16 +1,14 @@
 ﻿@page "/Accounts"
 @inject IAccountservice Accountservice;
-
-
+<!-- Displays an overview of created accounts -->
 <h3>Accounts</h3>
-
 
 @if (_accounts.Count == 0)
 {
 	<p>There are no accounts registered, please create your first account at the "Create Account"-page</p>
 }
 else
-{
+{	
 	<table class="accounts-table">
 		<thead>
 			<tr>
@@ -24,67 +22,87 @@ else
 				<th></th>
 			</tr>
 		</thead>
-			<tbody>
-				@foreach (var acc in _accounts)
-				{
+		<tbody>
+
+			<!-- Displays accounts -->
+			@foreach (var acc in _accounts)
+			{
 				<tr>
 					<td>@acc.Name</td>
 					<td>@acc.AccountType</td>
 					<td>@acc.Balance</td>
 					<td>@acc.Currency</td>
 					<td>
-						@if(acc.AccountType == AccountType.Savings)
+						<!-- Displays interest rate only for savings accounts -->
+						@if (acc.AccountType == AccountType.Savings)
 						{
 							@(Bankaccount.InterestRate * 100)
 						}
+						else if (acc.AccountType != AccountType.Savings)
+						{
+							@(Bankaccount.InterestRate * 0)
+						}%
 					</td>
 					<td>
+						<!-- Displays accumulated interest -->
 						@acc.ApplyInterest().ToString("C")
 					</td>
 					<td>@acc.LastUpdated.ToLocalTime()</td>
 					<td>
+						<!-- Remove account button -->
 						<button class="remove-btn" @onclick="() => RemoveAccount(acc)">Remove</button>
 					</td>
 				</tr>
-				}
-			</tbody>
+			}
+		</tbody>
 	</table>
-	
 }
+
 @code {
-
-
+	// Holds the currently loaded list of bank accounts from the account service.
 	private List<Bankaccount> _accounts = new();
+
+	/// <summary>
+	/// Loads all accounts when the page first initializes.
+	/// </summary>
 	protected override async Task OnInitializedAsync()
 	{
 		_accounts = await Accountservice.GetAccounts();
 	}
 
+	/// <summary>
+	/// Gets all accounts from storage
+	/// </summary>
+	/// <returns></returns>
 	private async Task GetAccountAsync()
 	{
 		try
-		{			
-			_accounts = await Accountservice.GetAccounts();			
+		{
+			_accounts = await Accountservice.GetAccounts();
 		}
 		catch (Exception exception)
 		{
 			Console.WriteLine("You are missing an input");
 			throw;
 		}
-
 	}
+
+	/// <summary>
+	/// Removes the selected account and refreshes the account list.
+	/// </summary>
 	private async Task RemoveAccount(IBankaccount account)
 	{
 		try
 		{
+			// Remove the account through the service
 			await Accountservice.DeleteAccount(account);
+			// Refresh the account list after removal
 			_accounts = await Accountservice.GetAccounts();
 		}
 		catch (Exception ex)
 		{
-
+			// Log the exception to console
 			Console.WriteLine(ex);
 		}
 	}
-
 }

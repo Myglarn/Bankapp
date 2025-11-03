@@ -1,7 +1,7 @@
 ﻿namespace Bankapp.Interfaces
 {
     /// <summary>
-    /// Interface containging the BankAccount methods
+    /// Interface for the bank account containing methods and properties
     /// </summary>
     public interface IBankaccount
     {

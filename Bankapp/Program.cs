@@ -11,7 +11,7 @@ namespace Bankapp
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            //Register services for DI
+            // Register services for Dependency Injection
             builder.Services.AddScoped<IAccountservice, Accountservice>();
             builder.Services.AddScoped<IStorageservice, Storageservice>();
 

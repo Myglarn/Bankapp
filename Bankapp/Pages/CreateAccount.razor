@@ -2,8 +2,10 @@
 @using System.ComponentModel.DataAnnotations
 @inject IAccountservice Accountservice;
 
+<!-- Account creation page -->
 <h3>Please create an account</h3>
 
+<!-- The EditForm binds to the _model instance and calls CreateAccountAsync when valid -->
 <EditForm Model="_model" OnValidSubmit="CreateAccountAsync">
 	<DataAnnotationsValidator />
 	<ValidationSummary />
@@ -12,9 +14,11 @@
 		<label>Account name</label>
 		<InputText @bind-Value="_model.Name"></InputText>
 	</div>
+
 	<div class="form-row">
 		<label>Account type</label>
-		<InputSelect @bind-Value="_model.AccountType">
+		<!-- Dropdown list for selecting account type -->
+		<InputSelect @bind-Value="_model.AccountType">			
 			<option value="">Choose account type</option>
 			<option value="@AccountType.Checking">Checking</option>
 			<option value="@AccountType.Savings">Savings</option>
@@ -24,16 +28,29 @@
 	<div class="form-row">
 		<label>Currency</label>
 		<InputSelect @bind-Value="_model.Currency">
-			<option value="@CurrencyType.SEK">SEK</option>
-			<option value="@CurrencyType.EUR">EUR</option>
-			<option value="@CurrencyType.DOLLAR">DOLLAR</option>
+			<option value="@CurrencyType.SEK">SEK</option>			
 		</InputSelect>		
 	</div>
+
 	<div class="form-row">
 		<label>Starting balance</label>
+		<!-- Numeric input for initial account balance -->
 		<InputNumber @bind-Value="_model.InitialBalance"></InputNumber>		
 	</div>
+
+	<div>
+		@if (!string.IsNullOrEmpty(ErrorM))
+		{
+			@ErrorM
+		}
+		@if (!string.IsNullOrEmpty(SuccessM))
+		{
+			@SuccessM
+		}
+	</div>
+
 	<button type="submit" class="btn-submit">Create account</button>
+
 </EditForm>
 
 <h4>All Accounts</h4>
@@ -48,49 +65,65 @@ else
 		{
 			<li>
 				<strong>@account.Name</strong> - @account.AccountType - @account.Balance - @account.Currency
-				<small>(uppdaterad @account.LastUpdated.ToLocalTime())</small>
+				<small>(uptaderat @account.LastUpdated.ToLocalTime())</small>
 			</li>
 		}
 	</ul>
-}	
+}
 
 @code {
 
+	// Model that represents the user input form for creating an account.	
 	private readonly CreatAccountModel _model = new();
-	private List<Bankaccount> _accounts = new();
 
+	// Local list of accounts displayed on the page.
+	// Retrieved from the account service when the page initializes or after account creation.	
+	private List<Bankaccount> _accounts = new();
+	private string? ErrorM = "";
+	private string? SuccessM = "";
+
+	/// <summary>
+	/// Loads all existing accounts when the page is first rendered.
+	/// </summary>
 	protected override async Task OnInitializedAsync()
 	{
 		_accounts = await Accountservice.GetAccounts();
 	}
 
-
+	/// <summary>
+	/// Creates a new bank account using the form model data.
+	/// Refreshes the displayed account list and resets the form afterward.
+	/// </summary>
 	private async Task CreateAccountAsync()
 	{
+		ErrorM = null;
+		SuccessM = null;
 		try
 		{			
 			await Accountservice.CreatAccount(_model.Name, _model.AccountType, _model.Currency, _model.InitialBalance);				
 			_accounts = await Accountservice.GetAccounts();
 			_model.Clear();
+			SuccessM = "Account Created";
 			StateHasChanged();
 		}
-		catch (Exception exception)
+		catch (ArgumentException ex)
 		{
-			Console.WriteLine("You are missing an input");
-			throw;
+			ErrorM = ex.Message;			
 		}
-
 	}
 
+	/// <summary>
+	/// Internal form model used to collect input for creating a new bank account.
+	/// Includes input validation through data annotation attributes.
+	/// </summary>
 	private class CreatAccountModel
-	{
-		[Required(ErrorMessage = "Please add an account name")]
+	{		
 		public string? Name { get; set; }
 		public AccountType AccountType { get; set;}
 		public CurrencyType Currency { get; set; }	
 		public decimal InitialBalance { get; set; } = 0;
-
-
+		
+		// Clears all form fields back to defaults after an account is created.		
 		public void Clear()
 		{
 			Name = string.Empty;
@@ -99,5 +132,4 @@ else
 			InitialBalance = 0;
 		}
 	}
-
 }
