@@ -200,11 +200,35 @@ code {
 .account-item p {
     display: flex;
     justify-content: space-between;
-    padding: 4px 0;
+    padding: 4px 0;Welcome to Suedbank
+With a CEO who DOESN'T mess with your money!
 }
 
 .account-info {
     display: inline-flex;
     gap: 20px;
     flex-wrap: wrap;
+}
+.home-page {
+
+}
+.h1-home {
+    font-family: 'Agency FB';
+    font-weight: 500;
+    font-size: 500%;    
+    text-align: center;
+    margin-bottom: 10rem;
+}
+.h4-home {
+    font-family: 'Cambria Math';
+    font-weight: 200;
+    font-size: 300%;
+    text-align: center;    
+}
+.h5-home {
+    font-family: 'Cambria Math';
+    font-weight: 100;
+    font-size: 200%;
+    text-align: center;
+    margin-top: 5rem;
 }
