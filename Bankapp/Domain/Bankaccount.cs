@@ -64,7 +64,7 @@ namespace Bankapp.Domain
         /// <summary>
         /// Handles withdraws from accounts
         /// </summary>        
-        public void Withdraw(decimal amount)
+        public void Withdraw(decimal amount, ExpenseCategory category)
         {
             if (amount <= 0)
             {
@@ -84,8 +84,9 @@ namespace Bankapp.Domain
                 ToAccount = null,
                 BalanceAfterTransaction = Balance,
                 TransactionType = TransactionType.Withdraw,
-                DateTimeNow = DateTime.Now
-            });
+                DateTimeNow = DateTime.Now,
+                Category = category
+            }); 
         }
 
         /// <summary>

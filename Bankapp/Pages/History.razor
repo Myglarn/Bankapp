@@ -51,6 +51,17 @@ else
 				}
 			</InputSelect>
 		</div>
+
+		<div class="col">
+			<label>Expense Category</label>
+			<InputSelect class="form-select" @bind-Value="filterExpense">
+				<option value="">Filter by Expense category</option>
+				@foreach (ExpenseCategory category in Enum.GetValues(typeof(ExpenseCategory)))
+				{
+					<option value="@category">@category</option>
+				}
+			</InputSelect>
+		</div>
 	</div>
 
 	@if (_selectedAccount == null)
@@ -85,7 +96,7 @@ else
 					</th>
 					<th>
 						<button class="btn btn-sm" @onclick="() => SetSort(SortKey.TransactionType)">
-							Sort: Transaction Type @(currentKey == SortKey.TransactionType ?
+							Sort: Transaction Type / Expense category @(currentKey == SortKey.TransactionType ?
 												(descending ? "⯆" : "⯅") : "")
 						</button>
 					</th>
@@ -105,7 +116,16 @@ else
 					<tr>
 						<td>@transaction.DateTimeNow.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
 						<td>@transaction.Amount</td>
-						<td>@transaction.TransactionType</td>
+						<td>
+							@if (transaction.TransactionType == TransactionType.Withdraw)
+							{
+								<span>@(transaction.TransactionType) / @(transaction.Category)</span>
+							}
+							else
+							{
+								@transaction.TransactionType
+							}
+						</td>
 						<td>@transaction.BalanceAfterTransaction</td>
 						<td>
 							@if (transaction.FromAccount.HasValue && transaction.ToAccount.HasValue)
@@ -137,9 +157,10 @@ else
 	private Guid _selectedAccountId;
 	private DateTime? filterFromDate;
 	private DateTime? filterToDate;
-	private TransactionType? filterTransactionType;	
+	private TransactionType? filterTransactionType;
+	private ExpenseCategory? filterExpense;
 	private bool descending = true;
-	
+
 	/// <summary>
 	/// Enum for the available sort columns.
 	/// </summary>
@@ -219,6 +240,10 @@ else
 		if (filterTransactionType.HasValue)
 		{
 			sortedList = sortedList.Where(t => t.TransactionType == filterTransactionType.Value);			
+		}
+		if (filterExpense.HasValue)
+		{
+			sortedList = sortedList.Where(t => t.Category == filterExpense.Value);
 		}
 
 		// Apply sorting

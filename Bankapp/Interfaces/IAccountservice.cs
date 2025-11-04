@@ -9,7 +9,7 @@
         Task<List<Bankaccount>> GetAccounts();
         void Transfer(Guid fromAccountId, Guid toAccountId, decimal amount);
         void Deposit(Guid toAccountId, decimal amount);
-        void Withdraw(Guid fromAccountId, decimal amount);
+        void Withdraw(Guid fromAccountId, decimal amount, ExpenseCategory category);
         Task DeleteAccount(IBankaccount account);
     }
 }

@@ -58,6 +58,37 @@ else
 					</InputSelect>
 				</div>				
 		}
+		else if (_model.TransactionType == TransactionType.Withdraw)
+		{
+			<div class="form-row">
+				<label>Account</label>
+				<InputSelect TValue="Guid"
+							 @bind-Value="_model.FromAccountId"
+							 class="form-select">
+					<option value="@Guid.Empty">-- Select an account --</option>
+					@foreach (var account in _accounts)
+					{
+						<option value="@account.Id">@account.Name: @account.Balance @account.Currency</option>
+					}
+				</InputSelect>
+			</div>
+
+			<div class="form-row">
+				<label>Expense category</label>
+				<InputSelect TValue="ExpenseCategory"
+					@bind-Value="_model.Category"
+					class="form-select">
+					<option value="Category.Empty">Choose expense category</option>
+					<option value="@ExpenseCategory.ATM">ATM</option>
+					<option value="@ExpenseCategory.Insurance">Insurance</option>
+					<option value="@ExpenseCategory.Rent">Rent</option>
+					<option value="@ExpenseCategory.Shopping">Shopping</option>
+					<option value="@ExpenseCategory.Streaming">Streaming</option>
+					<option value="@ExpenseCategory.Transport">Transport</option>
+					<option value="@ExpenseCategory.Unspecified">Unspecified</option>
+				</InputSelect>
+			</div>			
+		}
 		else
 		{
 			<div class="form-row">
@@ -144,6 +175,7 @@ else
 		public Guid ToAccountId { get; set; }
 		public decimal Amount { get; set; }
 		public CurrencyType Currency { get; set; }
+		public ExpenseCategory Category { get; set; }
 	}
 
 	/// <summary>
@@ -177,7 +209,7 @@ else
 					break;
 
 				case TransactionType.Withdraw:
-					Accountservice.Withdraw(_model.FromAccountId, _model.Amount);					
+					Accountservice.Withdraw(_model.FromAccountId, _model.Amount, _model.Category);					
 					break;
 
 				default:
