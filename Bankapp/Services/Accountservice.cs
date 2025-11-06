@@ -145,6 +145,6 @@ namespace Bankapp.Services
             toAccount.Deposit(amount);
             Console.WriteLine("Account Service: Deposit succeeded");
             _storageService.SetItemAsync(StorageKey, _accounts);
-        }
+        }        
     }
 }

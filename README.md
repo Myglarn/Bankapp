@@ -1,6 +1,6 @@
 # Bank application in Blazer
 
-##Description
+## Description
 This is my first project where I have built a bank applictation using Blazor in Visual Studio. The application allows you to create accounts, perform deposits, withdrawals, and transfers, and view transaction history with filtering and sorting options. All data is stored locally in the browser using Local Storage.
 
 ## Key Features Demonstrated in This Project
@@ -51,10 +51,9 @@ A basic username and PIN system is used to lock and unlock the UI, adding a real
 
 ## How to use the application
 
-###Log in credentials:
-| Username | PIN  |
-| -------- | ---- |
-| User     | 1234 |
+### Log in credentials:
+Username : User
+Pin: 1234
 
 
 ### Home

@@ -5,33 +5,37 @@
 <PageTitle>Suedbank</PageTitle>
 
 <div class="home-page">
-<h1 class="h1-home">Welcome to Suedbank </h1>
-<h4 class="h4-home"> Totaly NOT a rip-off of another bank</h4>
-<h5 class="h5-home"> Create your account and make transfers, deposits and withdrawls freely!</h5>
+<h1 class="h1-home">Welcome to Suedbank</h1>
+<h4 class="h4-home">Totaly NOT a rip-off of another bank</h4>
+<h5 class="h5-home">Create your account and make transfers, deposits and withdrawls freely!</h5>
 </div>
 
 <!-- Checks log in status -->
 <div>
 @if (!isLoggedIn)
 {
-	<h2>Log in</h2>
-	<p>Log in to access your account.</p>
-	<div class="form-row">
-		<input @bind="username"/>
-		<input @bind="pin"/>
-	</div>
+	<div class="login-form">		
+		<h2>Login</h2>
+		
+		<div class="form-row">			
+			<input @bind="username" placeholder="Username"/>			
+			<input @bind="pin" placeholder="Pin"/>
+		</div>
 
 		<button type="submit" class="btn-submit" @onclick="LogInAsync">Log in</button>
-	<p></p>
+		<p></p>
 
-	@if (logInFailed)
-	{
-		<p>Invalid username or PIN</p>
-	}
-	else if (isLoggedIn)
-	{
-		<p>Welcome back!</p>
-	}
+			@if (logInFailed)
+			{
+				@ErrorM
+			}
+			else if (isLoggedIn)
+			{
+				@SuccessM
+			}
+	</div>
+
+	
 }
 </div>
 
@@ -42,6 +46,8 @@
 	private bool isLoggedIn;
 	private bool logInFailed;
 	private Login? currentUser;
+	private string? ErrorM;
+	private string? SuccessM;
 
 	/// <summary>
 	/// Method that runs when the page initializes.
@@ -58,23 +64,32 @@
 		// Updates page when login state has changed
 		LoginService.OnLoginStateChanged += AuthStateChanged;
 	}
-	
+
 	/// <summary>
 	/// Attempts to log the user in using the provided username and PIN.
 	/// Updates UI state based on success or failure.
 	/// </summary>
 	private async Task LogInAsync()
 	{
+		ErrorM = null;
+		SuccessM = null;
 		logInFailed = false;
-		var success = await LoginService.LoginAsync(username, pin);
-		if (success)
+
+		try
 		{
-			isLoggedIn = true;
-			currentUser = await LoginService.GetLoginAsync();
+			var success = await LoginService.LoginAsync(username, pin);
+			if (success)
+			{
+				isLoggedIn = true;
+				currentUser = await LoginService.GetLoginAsync();
+				SuccessM = "Welcome back";
+			}			
+			SuccessM = null;
 		}
-		else
+		catch (ArgumentException ex)
 		{
 			logInFailed = true;
+			ErrorM = ex.Message;
 		}
 	}
 

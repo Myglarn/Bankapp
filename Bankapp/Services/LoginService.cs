@@ -55,7 +55,12 @@ namespace Bankapp.Services
                 OnLoginStateChanged?.Invoke();
                 return true;
             }
-            return false;            
+            else if (username != _defaultUser.Username || pin != _defaultUser.Pin)
+            {
+                Console.WriteLine("Login service: Wrong username or pin");
+                throw new ArgumentException("Wrong username or pin");
+            }
+            return false;
         }
 
         /// <summary>
