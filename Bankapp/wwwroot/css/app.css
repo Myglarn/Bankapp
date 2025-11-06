@@ -98,7 +98,7 @@ a, .btn-link {
 }
 
     .loading-progress-text:after {
-        content: var(--blazor-load-percentage-text, "Loggar in på din bankapp");
+        content: var(--blazor-load-percentage-text, "Loading your bank application");
     }
 
 code {
@@ -106,7 +106,7 @@ code {
 
     
 }
-/*Styr formuläret*/
+/*Controls the form*/
 .form-row{
     margin-bottom: 0.5rem
 }
@@ -143,7 +143,7 @@ code {
 
 }
 
-/* Knappar */
+/* Buttons */
 .btn-submit {
     background-color: #26b050;
     color: white;
@@ -170,7 +170,7 @@ code {
         background-color: #b02a37;
     }
 
-/*Styr tabellen*/
+/*Controls the tables*/
 
 .accounts-table {
     width: 100%;
@@ -200,8 +200,7 @@ code {
 .account-item p {
     display: flex;
     justify-content: space-between;
-    padding: 4px 0;Welcome to Suedbank
-With a CEO who DOESN'T mess with your money!
+    padding: 4px 0;
 }
 
 .account-info {

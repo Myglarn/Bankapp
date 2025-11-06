@@ -9,6 +9,7 @@
         public decimal Amount { get; set; }
         public DateTime DateTimeNow { get; set; } = DateTime.Now;
         public TransactionType TransactionType { get; set; }
+        public ExpenseCategory Category { get; set; } = ExpenseCategory.Unspecified;
         public decimal BalanceAfterTransaction { get; set; }
         public Guid? ToAccount { get; set; }
         public Guid? FromAccount { get; set; }

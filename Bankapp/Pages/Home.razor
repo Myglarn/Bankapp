@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject ILogIn LoginService
 
 <!-- Displays the Home page -->
 <PageTitle>Suedbank</PageTitle>
@@ -8,3 +9,98 @@
 <h4 class="h4-home"> Totaly NOT a rip-off of another bank</h4>
 <h5 class="h5-home"> Create your account and make transfers, deposits and withdrawls freely!</h5>
 </div>
+
+<!-- Checks log in status -->
+<div>
+@if (!isLoggedIn)
+{
+	<h2>Log in</h2>
+	<p>Log in to access your account.</p>
+	<div class="form-row">
+		<input @bind="username"/>
+		<input @bind="pin"/>
+	</div>
+
+		<button type="submit" class="btn-submit" @onclick="LogInAsync">Log in</button>
+	<p></p>
+
+	@if (logInFailed)
+	{
+		<p>Invalid username or PIN</p>
+	}
+	else if (isLoggedIn)
+	{
+		<p>Welcome back!</p>
+	}
+}
+</div>
+
+@code{
+	// Instance variables
+	private string username = "";
+	private string pin = "";
+	private bool isLoggedIn;
+	private bool logInFailed;
+	private Login? currentUser;
+
+	/// <summary>
+	/// Method that runs when the page initializes.
+	/// Checks the current login state and subscribes to login state change events.
+	/// </summary>
+	protected override async Task OnInitializedAsync()
+	{
+		// Initial state
+		isLoggedIn = await LoginService.IsLogedInAsync();
+		if (isLoggedIn)
+		{
+			currentUser = await LoginService.GetLoginAsync();
+		}
+		// Updates page when login state has changed
+		LoginService.OnLoginStateChanged += AuthStateChanged;
+	}
+	
+	/// <summary>
+	/// Attempts to log the user in using the provided username and PIN.
+	/// Updates UI state based on success or failure.
+	/// </summary>
+	private async Task LogInAsync()
+	{
+		logInFailed = false;
+		var success = await LoginService.LoginAsync(username, pin);
+		if (success)
+		{
+			isLoggedIn = true;
+			currentUser = await LoginService.GetLoginAsync();
+		}
+		else
+		{
+			logInFailed = true;
+		}
+	}
+
+	/// <summary>
+	/// Triggered when the global login state changes.
+	/// Updates login status and refreshes the UI.
+	/// </summary>
+	private async void AuthStateChanged()
+	{
+		isLoggedIn = await LoginService.IsLogedInAsync();
+		if (isLoggedIn)
+		{
+			currentUser = await LoginService.GetLoginAsync();
+		}
+		else
+		{
+			currentUser = null;
+		}		
+		await InvokeAsync(StateHasChanged);
+	}
+
+	/// <summary>
+	/// Unsubscribes from the login state change event.
+	/// </summary>
+	public void Dispose()
+	{
+		LoginService.OnLoginStateChanged -= AuthStateChanged;
+	}
+}

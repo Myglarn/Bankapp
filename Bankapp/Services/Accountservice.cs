@@ -116,7 +116,7 @@ namespace Bankapp.Services
         /// <summary>
         /// Method for withdrawing funds 
         /// </summary>        
-        public void Withdraw(Guid fromAccountId, decimal amount)
+        public void Withdraw(Guid fromAccountId, decimal amount, ExpenseCategory category)
         {
             var fromStorage = _storageService.GetItemAsync<List<Bankaccount>>(StorageKey);
             var fromAccount = _accounts.FirstOrDefault(x => x.Id == fromAccountId);
@@ -125,7 +125,7 @@ namespace Bankapp.Services
                 Console.WriteLine("Argument exception in Account Service: fromAccount field empty");
                 throw new ArgumentException("You must select an account");
             }
-            fromAccount.Withdraw(amount);
+            fromAccount.Withdraw(amount, category);
             Console.WriteLine("Account Service: Withdraw succeeded");
             _storageService.SetItemAsync(StorageKey, _accounts);
         }

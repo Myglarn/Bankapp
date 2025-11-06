@@ -6,7 +6,7 @@
 
 @if (_accounts.Count < 2)
 {
-	<p>Skapa minst 2 konton för att göra en transaktion</p>
+	<p>You need to create at least 2 accounts</p>
 }
 else
 {
@@ -57,6 +57,35 @@ else
 						}
 					</InputSelect>
 				</div>				
+		}
+		else if (_model.TransactionType == TransactionType.Withdraw)
+		{
+			<div class="form-row">
+				<label>Account</label>
+				<InputSelect TValue="Guid"
+							 @bind-Value="_model.FromAccountId"
+							 class="form-select">
+					<option value="@Guid.Empty">-- Select an account --</option>
+					@foreach (var account in _accounts)
+					{
+						<option value="@account.Id">@account.Name: @account.Balance @account.Currency</option>
+					}
+				</InputSelect>
+			</div>
+
+			<div class="form-row">
+				<label>Expense category</label>
+				<InputSelect TValue="ExpenseCategory"
+					@bind-Value="_model.Category"
+					class="form-select">
+					@foreach (ExpenseCategory category in Enum.GetValues(typeof(ExpenseCategory))
+								.Cast<ExpenseCategory>()
+								.Where(t => t != ExpenseCategory.Unspecified))
+					{
+						<option value="@category">@category</option>
+					}
+				</InputSelect>
+			</div>			
 		}
 		else
 		{
@@ -144,6 +173,7 @@ else
 		public Guid ToAccountId { get; set; }
 		public decimal Amount { get; set; }
 		public CurrencyType Currency { get; set; }
+		public ExpenseCategory Category { get; set; }
 	}
 
 	/// <summary>
@@ -177,7 +207,7 @@ else
 					break;
 
 				case TransactionType.Withdraw:
-					Accountservice.Withdraw(_model.FromAccountId, _model.Amount);					
+					Accountservice.Withdraw(_model.FromAccountId, _model.Amount, _model.Category);					
 					break;
 
 				default:

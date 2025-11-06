@@ -14,6 +14,7 @@ namespace Bankapp
             // Register services for Dependency Injection
             builder.Services.AddScoped<IAccountservice, Accountservice>();
             builder.Services.AddScoped<IStorageservice, Storageservice>();
+            builder.Services.AddScoped<ILogIn, LoginService>();
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
