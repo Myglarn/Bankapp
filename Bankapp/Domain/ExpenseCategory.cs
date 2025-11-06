@@ -11,6 +11,7 @@
         Transport,
         Insurance,
         Streaming,
+        Other,
         Unspecified
     }
 }

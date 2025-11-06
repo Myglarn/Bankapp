@@ -56,7 +56,11 @@ else
 			<label>Expense Category</label>
 			<InputSelect class="form-select" @bind-Value="filterExpense">
 				<option value="">Filter by Expense category</option>
-				@foreach (ExpenseCategory category in Enum.GetValues(typeof(ExpenseCategory)))
+
+				<!-- Exclude "Unspecified" so as not to be able to filter by defualt category -->
+				@foreach (ExpenseCategory category in Enum.GetValues(typeof(ExpenseCategory))
+							.Cast<ExpenseCategory>()
+							.Where(t => t != ExpenseCategory.Unspecified))
 				{
 					<option value="@category">@category</option>
 				}
@@ -106,6 +110,7 @@ else
 												(descending ? "⯆" : "⯅") : "")
 						</button>
 					</th>
+
 					<th>From -> To</th>
 				</tr>
 			</thead>
@@ -169,7 +174,7 @@ else
 		Date,
 		Amount,
 		TransactionType,
-		BalanceAfterTransaction
+		BalanceAfterTransaction		
 	}
 
 	/// <summary>
@@ -252,9 +257,8 @@ else
 			SortKey.Amount => (descending ? sortedList.OrderByDescending(t => t.Amount) : sortedList.OrderBy(t => t.Amount)),
 			SortKey.Date => (descending ? sortedList.OrderByDescending(t => t.DateTimeNow) : sortedList.OrderBy(t => t.DateTimeNow)),
 			SortKey.TransactionType => (descending ? sortedList.OrderByDescending(t => t.TransactionType) : sortedList.OrderBy(t => t.TransactionType)),
-			SortKey.BalanceAfterTransaction => (descending ? sortedList.OrderByDescending(t => t.BalanceAfterTransaction) : sortedList.OrderBy(t => t.BalanceAfterTransaction))
-		};
-		
+			SortKey.BalanceAfterTransaction => (descending ? sortedList.OrderByDescending(t => t.BalanceAfterTransaction) : sortedList.OrderBy(t => t.BalanceAfterTransaction))			
+		};		
 		return sortedList;
 	}
 }

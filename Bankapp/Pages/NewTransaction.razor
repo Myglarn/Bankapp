@@ -6,7 +6,7 @@
 
 @if (_accounts.Count < 2)
 {
-	<p>Skapa minst 2 konton för att göra en transaktion</p>
+	<p>You need to create at least 2 accounts</p>
 }
 else
 {
@@ -78,14 +78,12 @@ else
 				<InputSelect TValue="ExpenseCategory"
 					@bind-Value="_model.Category"
 					class="form-select">
-					<option value="Category.Empty">Choose expense category</option>
-					<option value="@ExpenseCategory.ATM">ATM</option>
-					<option value="@ExpenseCategory.Insurance">Insurance</option>
-					<option value="@ExpenseCategory.Rent">Rent</option>
-					<option value="@ExpenseCategory.Shopping">Shopping</option>
-					<option value="@ExpenseCategory.Streaming">Streaming</option>
-					<option value="@ExpenseCategory.Transport">Transport</option>
-					<option value="@ExpenseCategory.Unspecified">Unspecified</option>
+					@foreach (ExpenseCategory category in Enum.GetValues(typeof(ExpenseCategory))
+								.Cast<ExpenseCategory>()
+								.Where(t => t != ExpenseCategory.Unspecified))
+					{
+						<option value="@category">@category</option>
+					}
 				</InputSelect>
 			</div>			
 		}

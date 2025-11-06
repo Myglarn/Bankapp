@@ -16,7 +16,7 @@ namespace Bankapp.Domain
         public List<Transaction> Transactions { get; private set; } = new();
         public const decimal InterestRate = 0.02m;
 
-        // Constructor
+        // Constructors
         public Bankaccount(string name, AccountType accountType, CurrencyType currency, decimal initialBalance)
         {
             Name = name;

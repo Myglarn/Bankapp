@@ -26,6 +26,7 @@ namespace Bankapp.Services
             var json = JsonSerializer.Serialize(value, _jsonSerializerOptions);
             await _jSRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
         }
+
         /// <summary>
         /// Deserializes an object from local storage
         /// </summary>        
