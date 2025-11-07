@@ -59,6 +59,7 @@ else
 }
 
 @code {
+
 	// Holds the currently loaded list of bank accounts from the account service.
 	private List<Bankaccount> _accounts = new();
 
@@ -68,41 +69,16 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		_accounts = await Accountservice.GetAccounts();
-	}
-
-	/// <summary>
-	/// Gets all accounts from storage
-	/// </summary>
-	/// <returns></returns>
-	private async Task GetAccountAsync()
-	{
-		try
-		{
-			_accounts = await Accountservice.GetAccounts();
-		}
-		catch (Exception exception)
-		{
-			Console.WriteLine("You are missing an input");
-			throw;
-		}
-	}
+	}	
 
 	/// <summary>
 	/// Removes the selected account and refreshes the account list.
 	/// </summary>
 	private async Task RemoveAccount(IBankaccount account)
 	{
-		try
-		{
-			// Remove the account through the service
-			await Accountservice.DeleteAccount(account);
-			// Refresh the account list after removal
-			_accounts = await Accountservice.GetAccounts();
-		}
-		catch (Exception ex)
-		{
-			// Log the exception to console
-			Console.WriteLine(ex);
-		}
+		// Remove the account through the service
+		await Accountservice.DeleteAccount(account);
+		// Refresh the account list after removal
+		_accounts = await Accountservice.GetAccounts();
 	}
 }

@@ -71,6 +71,7 @@ namespace Bankapp.Services
             await _storageservice.SetItemAsync<Login?>(UserKey, null);
             await _storageservice.SetItemAsync(LoggedInKey, false);
             OnLoginStateChanged?.Invoke();
+            Console.WriteLine("Login Service: Logged out");
         }
     }
 }
